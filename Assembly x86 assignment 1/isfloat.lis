@@ -1,0 +1,151 @@
+     1                                  extern scanf
+     2                                  extern printf 
+     3                                  global twofloat
+     4                                  
+     5                                  section .data
+     6                                  
+     7 00000000 506C6561736520656E-     welcome_message db "Please enter two float seperated by whitespace. Press enter after the second input.",0
+     7 00000009 7465722074776F2066-
+     7 00000012 6C6F61742073657065-
+     7 0000001B 726174656420627920-
+     7 00000024 776869746573706163-
+     7 0000002D 652E20507265737320-
+     7 00000036 656E74657220616674-
+     7 0000003F 657220746865207365-
+     7 00000048 636F6E6420696E7075-
+     7 00000051 742E00             
+     8 00000054 256C6620256C6600        float_numbers db "%lf %lf",0
+     9 0000005C 5468657365206E756D-     second_message db "These numbers where entered: %1.3lf and %1.3lf",10,0
+     9 00000065 626572732077686572-
+     9 0000006E 6520656E7465726564-
+     9 00000077 3A2025312E336C6620-
+     9 00000080 616E642025312E336C-
+     9 00000089 660A00             
+    10 0000008C 546865206C61726765-     large_number db "The larger number is %1.5lf",10,0
+    10 00000095 72206E756D62657220-
+    10 0000009E 69732025312E356C66-
+    10 000000A7 0A00               
+    11 000000A9 546869732061737365-     endprogram db "This assembly module will now return execution to the driver module.",10,0
+    11 000000B2 6D626C79206D6F6475-
+    11 000000BB 6C652077696C6C206E-
+    11 000000C4 6F772072657475726E-
+    11 000000CD 20657865637574696F-
+    11 000000D6 6E20746F2074686520-
+    11 000000DF 647269766572206D6F-
+    11 000000E8 64756C652E0A00     
+    12 000000EF 54686520736D616C6C-     endprogram2 db "The smaller number will be returned to the driver.",10,0
+    12 000000F8 6572206E756D626572-
+    12 00000101 2077696C6C20626520-
+    12 0000010A 72657475726E656420-
+    12 00000113 746F20746865206472-
+    12 0000011C 697665722E0A00     
+    13                                  
+    14                                  Section .bss
+    15                                  
+    16                                  
+    17                                  section .text
+    18                                  twofloat:
+    19                                  
+    20 00000000 55                      push rbp
+    21 00000001 4889E5                  mov rbp,rsp
+    22 00000004 57                      push rdi
+    23 00000005 56                      push rsi
+    24 00000006 52                      push rdx
+    25 00000007 51                      push rcx
+    26 00000008 4150                    push r8
+    27 0000000A 4151                    push r9
+    28 0000000C 4152                    push r10
+    29 0000000E 4153                    push r11
+    30 00000010 4154                    push r12
+    31 00000012 4155                    push r13
+    32 00000014 4156                    push r14
+    33 00000016 4157                    push r15
+    34 00000018 53                      push rbx 
+    35 00000019 9C                      pushf
+    36                                  
+    37                                  
+    38                                  ;========Display Welcome message Asking for users inputs================================================================
+    39 0000001A 6A63                    push qword 99
+    40 0000001C B800000000              mov rax,0
+    41 00000021 48BF-                   mov rdi,welcome_message
+    41 00000023 [0000000000000000] 
+    42 0000002B E8(00000000)            call printf
+    43 00000030 58                      pop rax
+    44                                  
+    45                                  ;========Users two inputs===============================================================================================
+    46                                  
+    47 00000031 6AFF                    push qword -1
+    48 00000033 6AFE                    push qword -2
+    49 00000035 B800000000              mov rax,0
+    50 0000003A 48BF-                   mov rdi,float_numbers
+    50 0000003C [5400000000000000] 
+    51 00000044 4889E6                  mov rsi, rsp
+    52 00000047 4889E2                  mov rdx, rsp
+    53 0000004A 4883C208                add rdx, 8 
+    54 0000004E E8(00000000)            call scanf
+    55                                  
+    56 00000053 F2440F102424            movsd xmm12, [rsp]
+    57 00000059 F2440F106C2408          movsd xmm13,[rsp+8]
+    58 00000060 58                      pop rax
+    59 00000061 58                      pop rax
+    60 00000062 58                      pop rax
+    61                                  
+    62                                  ;========Display users two inputs=======================================================================================
+    63                                  
+    64                                  
+    65 00000063 6A63                    push qword 99
+    66 00000065 B802000000              mov rax,2
+    67 0000006A 48BF-                   mov rdi,second_message
+    67 0000006C [5C00000000000000] 
+    68 00000074 F2410F10C4              movsd xmm0,xmm12
+    69 00000079 F2410F10CD              movsd xmm1,xmm13
+    70 0000007E F2440F10D0              movsd xmm10,xmm0
+    71 00000083 F2440F10D9              movsd xmm11,xmm1
+    72 00000088 E8(00000000)            call printf
+    73                                  
+    74 0000008D 58                      pop rax
+    75                                  
+    76                                  ;========Compare users two inputs===================================================================================
+    77                                  
+    78 0000008E 66450F2ED3              ucomisd xmm10, xmm11
+    79 00000093 7707                    ja xmm0large
+    80 00000095 EB0A                    jmp continue
+    81 00000097 F2450F10CB              movsd xmm9, xmm11
+    82                                  xmm0large:
+    83 0000009C F2450F10CA              movsd xmm9,xmm10
+    84                                  continue:
+    85                                  
+    86                                  
+    87                                  ;=========Display large number===================================================================
+    88 000000A1 6A63                    push qword 99
+    89 000000A3 B801000000              mov rax,1
+    90 000000A8 48BF-                   mov rdi,large_number
+    90 000000AA [8C00000000000000] 
+    91 000000B2 F2410F10C1              movsd xmm0,xmm9
+    92 000000B7 F2450F10F9              movsd xmm15,xmm9
+    93 000000BC E8(00000000)            call printf
+    94 000000C1 58                      pop rax
+    95                                  
+    96                                  
+    97                                  ;=========display the goodbye messages========================================================
+    98                                  
+    99                                  
+   100                                  
+   101                                  ;======================================================================================================================
+   102 000000C2 9D                      popf
+   103 000000C3 5B                      pop rbx
+   104 000000C4 415F                    pop r15
+   105 000000C6 415E                    pop r14
+   106 000000C8 415D                    pop r13
+   107 000000CA 415C                    pop r12
+   108 000000CC 415B                    pop r11
+   109 000000CE 415A                    pop r10
+   110 000000D0 4159                    pop r9
+   111 000000D2 4158                    pop r8
+   112 000000D4 59                      pop rcx
+   113 000000D5 5A                      pop rdx
+   114 000000D6 5E                      pop rsi
+   115 000000D7 5F                      pop rdi
+   116 000000D8 5D                      pop rbp
+   117                                  
+   118 000000D9 C3                      ret 
